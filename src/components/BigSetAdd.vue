@@ -9,7 +9,7 @@ const description = ref('');
 </script>
 
 <template>
-  <h2>Add a new big set</h2>
+  <h2>Add a new big set (temp item)</h2>
 
   <button type="button" class="btn btn-primary" @click="handleAddClick">
     <i class="bi bi-plus-lg"></i> Add
