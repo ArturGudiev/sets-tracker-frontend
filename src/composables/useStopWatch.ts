@@ -1,24 +1,25 @@
 import { computed, ref, watch } from 'vue'
 
-export default function useStopWatch(launchStopwatch: boolean = false) {
+export default function useStopWatch() {
 
-  const startTime = ref(launchStopwatch ? Date.now() : 0);
-  const initialized = ref(launchStopwatch);
-  const isRunning = ref(launchStopwatch);
+  const startTime = ref(0);
+  const initialized = ref(false);
+  const isRunning = ref(false);
 
-  const timePassed = computed(() => initialized.value ? now.value - startTime.value : 0);
+  const timePassed = computed(() => initialized.value ? now.value - startTime.value + accumulatedValue.value : 0);
   const milliseconds = computed(() => timePassed.value % 1000);
   const totalSeconds = computed(() => Math.round(timePassed.value / 1000))
   const seconds = computed(() => totalSeconds.value % 60);
   const minutes = computed(() => Math.floor(totalSeconds.value / 60 % 60))
   const hours = computed(() => Math.floor(totalSeconds.value / 3600 % 24))
   const now = ref(Date.now());
+  const accumulatedValue = ref(0);
 
 
   const initialize = () => {
     now.value = Date.now();
-    startTime.value = Date.now();
     initialized.value = true;
+    accumulatedValue.value = 0;
   };
 
   const start = () => {
@@ -26,10 +27,26 @@ export default function useStopWatch(launchStopwatch: boolean = false) {
       initialize();
     }
     isRunning.value = true;
+    startTime.value = Date.now();
+    const currentTime = Date.now();
+    startTime.value = currentTime;
+    now.value = currentTime;
   }
 
+  // const pause = () => {
+  //   isRunning.value = false;
+  //   accumulatedValue.value = accumulatedValue.value + (now.value - startTime.value);
+  // }
   const pause = () => {
     isRunning.value = false;
+    // Capture current time directly
+    const currentTime = Date.now();
+    // Add the elapsed time from this session to accumulated value
+    accumulatedValue.value = accumulatedValue.value + (currentTime - startTime.value);
+    // Reset startTime to current time so next start begins correctly
+    startTime.value = currentTime;
+    // Update now.value to current time so display is correct
+    now.value = currentTime;
   }
 
   const reset = (isRunningValue?: boolean) => {
@@ -49,17 +66,16 @@ export default function useStopWatch(launchStopwatch: boolean = false) {
       clearInterval(interval);
     }
     interval = setInterval(() => {
-      if (isRunningNewValue) {
-        setInterval(() => {
-          if (isRunning.value) {
-            return now.value = Date.now()
-          }
-        }, 100);
+      if (isRunning.value) {
+        now.value = Date.now();
+      } else {  
+         if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
       }
-    })
+    }, )
   }, { immediate: true })
-
-
 
 
   return {
