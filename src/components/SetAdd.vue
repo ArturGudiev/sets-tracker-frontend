@@ -12,7 +12,7 @@ const distractions = ref<number>(0);
 const comments = ref<string>('');
 const duration = ref<string>('');
 const manualDurationInput = ref<boolean>(false);
-  const stopWatchRef = ref<InstanceType<typeof StopWatch> | null>(null);
+const stopWatchRef = ref<InstanceType<typeof StopWatch> | null>(null);
 
 const durationToSubmit = computed(() => {
   if (!manualDurationInput.value) {
@@ -31,10 +31,12 @@ const submitForm = () => {
   };
 
   setsService.createSet(newSet).then((newSet) => {
-    toast.success(`Новый Set "${newSet.description}" добавлен!`);
+    const timeStr = stopWatchRef.value?.stopWatchTimeStringUnits;
+    toast.success(`Новый Set "${newSet.description}" добавлен c продолжительностью ${timeStr}!`);
     comments.value = '';
     distractions.value = 0;
-    stopWatchRef.value?.clear();
+    stopWatchRef.value?.pause();
+
   });
 }
 

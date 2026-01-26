@@ -1,85 +1,49 @@
-import { computed, ref, watch } from 'vue'
-
+import { computed, ref } from 'vue'
+import { useNow } from '@vueuse/core'
 export default function useStopWatch() {
 
-  const startTime = ref(0);
   const initialized = ref(false);
-  const isRunning = ref(false);
+  const startTime = ref(Date.now());
+  const status = ref<'initial' | 'running' | 'pause'>('initial'); //Replace on status initial, running, pause
+  const now = useNow() // Automatically reactive and managed
 
-  const timePassed = computed(() => initialized.value ? now.value - startTime.value + accumulatedValue.value : 0);
+  const timePassed = computed(() => {
+    if (status.value === 'initial') {
+      return 0;
+    }
+    return accumulatedValue.value + (status.value === 'running' ? Number(now.value) - startTime.value : 0);
+  });
   const milliseconds = computed(() => timePassed.value % 1000);
   const totalSeconds = computed(() => Math.round(timePassed.value / 1000))
   const seconds = computed(() => totalSeconds.value % 60);
   const minutes = computed(() => Math.floor(totalSeconds.value / 60 % 60))
   const hours = computed(() => Math.floor(totalSeconds.value / 3600 % 24))
-  const now = ref(Date.now());
+
   const accumulatedValue = ref(0);
 
-
-  const initialize = () => {
-    now.value = Date.now();
-    initialized.value = true;
-    accumulatedValue.value = 0;
-  };
-
   const start = () => {
-    if (!initialized.value) {
-      initialize();
+    if (status.value === 'running') {
+      return;
     }
-    isRunning.value = true;
     startTime.value = Date.now();
-    const currentTime = Date.now();
-    startTime.value = currentTime;
-    now.value = currentTime;
+    status.value = 'running';
   }
 
-  // const pause = () => {
-  //   isRunning.value = false;
-  //   accumulatedValue.value = accumulatedValue.value + (now.value - startTime.value);
-  // }
   const pause = () => {
-    isRunning.value = false;
-    // Capture current time directly
-    const currentTime = Date.now();
-    // Add the elapsed time from this session to accumulated value
-    accumulatedValue.value = accumulatedValue.value + (currentTime - startTime.value);
-    // Reset startTime to current time so next start begins correctly
-    startTime.value = currentTime;
-    // Update now.value to current time so display is correct
-    now.value = currentTime;
-  }
-
-  const reset = (isRunningValue?: boolean) => {
-    const nowTime = Date.now();
-    startTime.value = nowTime;
-    now.value = nowTime;
-    initialized.value = true;
-    if (isRunningValue !== undefined) {
-      isRunning.value = isRunningValue;
+    if (status.value === 'running') {
+      accumulatedValue.value += (Date.now() - startTime.value);
+      status.value = 'pause';
     }
   }
 
-  let interval: null | ReturnType<typeof setInterval> = null;
-
-  watch(isRunning, (isRunningNewValue) => {
-    if ( interval ) {
-      clearInterval(interval);
+  const reset = () => {
+    accumulatedValue.value = 0;
+    if (status.value === 'running') {
+      startTime.value = Date.now();
     }
-    interval = setInterval(() => {
-      if (isRunning.value) {
-        now.value = Date.now();
-      } else {  
-         if (interval) {
-          clearInterval(interval);
-          interval = null;
-        }
-      }
-    }, )
-  }, { immediate: true })
-
+  }
 
   return {
-    initialize,
     start,
     pause,
     reset,
@@ -90,7 +54,7 @@ export default function useStopWatch() {
     minutes,
     hours,
     initialized,
-    isRunning,
+    isRunning: status,
     timePassed
   }
 }

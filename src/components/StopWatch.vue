@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import useStopWatch from '@/composables/useStopWatch.ts'
 
-const stopwatch = useStopWatch(false);
+const stopwatch = useStopWatch();
 
 const stopwatchRunning = computed(() => stopwatch.isRunning);
 
@@ -19,11 +19,22 @@ const stopWatchTimeString = computed(() => {
   return `${hoursPart}${minutesPart}${secondsPart}${millisecondsPart}`;
 })
 
+const stopWatchTimeStringUnits = computed(() => {
+  const hours = stopwatch.hours.value;
+  const minutes = stopwatch.minutes.value;
+  const seconds = stopwatch.seconds.value;
+  const hoursPart = hours > 0 ? `${hours}h ` : '';
+  const minutesPart = minutes > 0 ? `${minutes}m ` : '';
+  const secondsPart = seconds > 0 ? `${seconds}s` : '';
+
+  return `${hoursPart}${minutesPart}${secondsPart}`;
+})
+
 const totalSeconds = computed(() => stopwatch.totalSeconds);
 
-const clear = () => {};
+const pause = () => stopwatch.pause();
 
-defineExpose({ totalSeconds: totalSeconds.value, clear })
+defineExpose({ totalSeconds: totalSeconds.value, pause, stopWatchTimeStringUnits })
 
 </script>
 
