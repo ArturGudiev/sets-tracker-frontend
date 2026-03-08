@@ -35,7 +35,7 @@ const fetchData = () => {
 
     <div class="form-check form-switch d-inline-block me-2">
       <input v-model="groupedSets" class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-      <label class="form-check-label" for="flexSwitchCheckChecked">Grouped</label>
+      <label class="form-check-label" for="flexSwitchCheckChecked">Grouped items</label>
     </div>
 
   </div>
