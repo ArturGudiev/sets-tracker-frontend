@@ -12,3 +12,8 @@ export interface GroupedSet {
   description: string;
   count: number;
 }
+
+
+export interface SetResponse {
+  id: number;
+}

@@ -1,10 +1,13 @@
 import moment from 'moment'
 
-export function getLocalDate(date: string | Date):  string {
-    if (typeof date === 'string') {
-      moment(new Date(date)).format('YYYY-MM-DD HH:mm');
-    }
-  return moment(date.toLocaleString()).format('YYYY-MM-DD HH:mm');
+export function getLocalDate(date: string | Date | undefined | null): string {
+  if (date == null) {
+    return ''
+  }
+  if (typeof date === 'string') {
+    return moment(new Date(date)).format('YYYY-MM-DD HH:mm')
+  }
+  return moment(date).format('YYYY-MM-DD HH:mm')
 }
 
 export function formatDuration(durationRaw: string): string {
