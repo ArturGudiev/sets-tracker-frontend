@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import moment from 'moment'
 import useStopWatch from '@/composables/useStopWatch.ts'
 
-const stopwatch = useStopWatch();
+const props = defineProps<{
+  initialDuration?: string | null // TODO check to get rid of null in type annotation
+}>()
+
+const initialMilliseconds = props.initialDuration ? moment.duration(props.initialDuration).asMilliseconds() : 0
+
+const stopwatch = useStopWatch(initialMilliseconds);
 
 const stopwatchRunning = computed(() => stopwatch.isRunning);
 
@@ -31,10 +38,11 @@ const stopWatchTimeStringUnits = computed(() => {
 })
 
 const totalSeconds = computed(() => stopwatch.totalSeconds);
+const milliseconds = computed(() => stopwatch.milliseconds);
 
 const pause = () => stopwatch.pause();
 
-defineExpose({ totalSeconds: totalSeconds.value, pause, stopWatchTimeStringUnits })
+defineExpose({ totalSeconds: totalSeconds.value, milliseconds, pause, stopWatchTimeStringUnits })
 
 </script>
 
