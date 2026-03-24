@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import SetAdd from '@/components/SetAdd.vue'
 import BigSetAdd from '@/components/BigSetAdd.vue'
+import BigSetCard from '@/components/BigSetCard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,10 +17,17 @@ const router = createRouter({
       name: 'setAdd',
       component: SetAdd,
     },
+
     {
       path: '/big-sets/add',
       name: 'bigSetAdd',
       component: BigSetAdd,
+    },
+    {
+      path: '/big-sets/:id',
+      name: 'bigSetCard',
+      component: BigSetCard,
+      props: true
     },
     {
       path: '/about',

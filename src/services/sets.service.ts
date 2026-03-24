@@ -12,7 +12,7 @@ const apiHost = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8001'
 export default {
 
   createSet: async (newSet: WithoutId<SingleSet>): Promise<SingleSet> => {
-    return axios.post(`${apiHost}/set/create`, newSet)
+    return axios.post(`${apiHost}/sets`, newSet)
       .then((res) => res.data)
   },
 
@@ -49,6 +49,12 @@ export default {
   getBigSet: async (id: number): Promise<BigSetFull> => {
     return axios.get<BigSetFull>(`${apiHost}/big-sets/${id}`)
       .then((res) => res.data)
+  },
+
+  getTodayBigSets: async (): Promise<BigSetFull[]> => {
+    return axios.get<BigSetFull[]>(`${apiHost}/big-sets`, {
+      params: { today: true }
+    }).then((res) => res.data)
   },
 
 }

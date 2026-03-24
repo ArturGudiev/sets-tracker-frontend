@@ -3,10 +3,12 @@ import { formatDuration, getLocalDate } from '@/utils/common.ts'
 import { onMounted, ref } from 'vue'
 import type { GroupedSet, SingleSet } from '@/types/single-set.interface.ts'
 import { setsService } from '@/services'
+import type { BigSetFull } from '@/types/generated'
 
 const todaySets = ref<SingleSet[]>([])
 const todayGroupedSets = ref<GroupedSet[]>([])
-const groupedSets = ref<boolean>(false)
+const todayBigSets = ref<BigSetFull[]>([])
+const displayType = ref<'sets' | 'grouped-sets' | 'big-sets'>('sets')
 
 onMounted(() => {
   fetchData()
@@ -15,6 +17,7 @@ onMounted(() => {
 const fetchData = () => {
   setsService.getTodaySets().then(sets => todaySets.value = sets);
   setsService.getTodayGroupedSets().then(setsGrouped => todayGroupedSets.value = setsGrouped);
+  setsService.getTodayBigSets().then(res => todayBigSets.value = res);
 }
 
 </script>
@@ -34,13 +37,18 @@ const fetchData = () => {
     </button>
 
     <div class="form-check form-switch d-inline-block me-2">
-      <input v-model="groupedSets" class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-      <label class="form-check-label" for="flexSwitchCheckChecked">Grouped items</label>
+      <label for="exampleSelect" class="form-label">Выберите значение</label>
+      <select class="form-select" v-model="displayType" id="exampleSelect" aria-label="Default select example">
+        <option value="sets">Обычные сеты</option>
+        <option value="grouped-sets">Сгруппированные</option>
+        <option value="big-sets">Большие сеты</option>
+      </select>
+
     </div>
 
   </div>
 
-  <div class="ms-3 mt-4" v-if="!groupedSets">
+  <div class="ms-3 mt-4" v-if="displayType === 'sets'">
     <h3 class="mb-3">Today's Sets</h3>
     <table class="table table-striped table-hover">
       <thead class="table-dark">
@@ -67,7 +75,7 @@ const fetchData = () => {
       </tbody>
     </table>
   </div>
-  <div class="ms-3 mt-4" v-else>
+  <div class="ms-3 mt-4" v-else-if="displayType === 'grouped-sets'">
     <h3 class="mb-3">Today's Grouped Sets</h3>
     <table class="table table-striped table-hover">
       <thead class="table-dark">
@@ -81,6 +89,25 @@ const fetchData = () => {
           <td>{{ set.description }}</td>
           <td>{{ set.count }}</td>
         </tr>
+      </tbody>
+    </table>
+  </div>
+  <div v-else-if="displayType === 'big-sets'">
+    <h3 class="mb-3">Today's Big Sets</h3>
+    <table class="table table-striped table-hover">
+      <thead class="table-dark">
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Description</th>
+        <th scope="col">Count</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-for="set in todayBigSets" :key="set.id">
+        <td>{{ set.id }}</td>
+        <td>{{ set.description }}</td>
+        <td>{{ set.sets?.length ?? 0 }}</td>
+      </tr>
       </tbody>
     </table>
   </div>

@@ -39,10 +39,11 @@ const stopWatchTimeStringUnits = computed(() => {
 
 const totalSeconds = computed(() => stopwatch.totalSeconds);
 const milliseconds = computed(() => stopwatch.milliseconds);
+const timePassed = computed(() => stopwatch.timePassed);
 
 const pause = () => stopwatch.pause();
 
-defineExpose({ totalSeconds: totalSeconds.value, milliseconds, pause, stopWatchTimeStringUnits })
+defineExpose({ totalSeconds, milliseconds, timePassed, pause, stopWatchTimeStringUnits })
 
 </script>
 
